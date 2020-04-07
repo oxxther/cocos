@@ -34,8 +34,42 @@ cc.Class({
     // onLoad () {},
 
     start () {
-        
+       
     },
 
     // update (dt) {},
+
+    //初始化卡牌
+    initCards(){
+        var node = this.node;
+        for (let index = 0; index < 4; index++) {
+            cc.loader.loadRes('prefabs/roleCard1', function (err, prefab) {
+                var roleCard1 = cc.instantiate(prefab);
+                roleCard1.parent = node;
+                roleCard1.x = -450 + index * 300;
+                var rcd = roleCard1.getComponent("RoleCardDetail");
+                //创建sprite和attack
+                cc.loader.loadRes('images/player1', cc.SpriteFrame, function (err, spriteFrame) {
+                    rcd.initCard(spriteFrame,"11");
+                });
+            });
+        }
+    },
+
+    resetCards2Normal(){
+        var roleCards = this.node.children;
+        roleCards.forEach(element => {
+            element.getComponent("RoleCardDetail").state = RoleCardState.Normal;
+        });
+    },
+
+    removeCards(){
+        var roleCards = this.node.children;
+        roleCards.forEach(element => {
+            element.destroy();
+        });
+    }
+
 });
+
+

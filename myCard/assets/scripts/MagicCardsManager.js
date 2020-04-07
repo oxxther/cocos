@@ -38,4 +38,37 @@ cc.Class({
     },
 
     // update (dt) {},
+
+    //初始化卡牌
+    initCards(){
+        cc.log("初始化魔法卡");
+        var node = this.node;
+        for (let index = 0; index < 4; index++) {
+            cc.loader.loadRes('prefabs/magicCard1', function (err, prefab) {
+                var magicCard1 = cc.instantiate(prefab);
+                magicCard1.parent = node;
+                magicCard1.x = -450 + index * 300;
+                var mcd = magicCard1.getComponent("MagicCardDetail");
+                //创建sprite和attack
+                cc.loader.loadRes('images/player2', cc.SpriteFrame, function (err, spriteFrame) {
+                    mcd.initCard(spriteFrame,"22");
+                });
+            });
+        }
+    },
+
+    resetCards2Normal(){
+        var magicCards = this.node.children;
+        magicCards.forEach(element => {
+            element.getComponent("MagicCardDetail").state = MagicCardState.Normal;
+        });
+    },
+
+    removeCards(){
+        var magicCards = this.node.children;
+        magicCards.forEach(element => {
+            element.destroy();
+        });
+    }
+
 });
