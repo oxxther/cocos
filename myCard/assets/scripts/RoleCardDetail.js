@@ -47,7 +47,6 @@ cc.Class({
 
     //点击的时候
     clickCard(){
-        cc.log(this.state);
         if (this.state == RoleCardState.Normal) {
             var roleCardsManager = cc.find("Canvas/RoleCards").getComponent("RoleCardsManager");
             roleCardsManager.resetCards2Normal();

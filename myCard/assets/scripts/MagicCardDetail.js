@@ -46,7 +46,6 @@ cc.Class({
 
     //点击的时候
     clickCard(){
-        cc.log(this.state);
         if (this.state == MagicCardState.Normal) {
             var magicCardsManager = cc.find("Canvas/MagicCards").getComponent("MagicCardsManager");
             magicCardsManager.resetCards2Normal();
@@ -54,7 +53,7 @@ cc.Class({
 
             //亮起提示框
             var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
-            km.setKengCanClick();
+            km.setKengCanClick(this);
 
             return;
         }

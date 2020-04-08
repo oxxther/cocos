@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 var RoleCardDetail = require("RoleCardDetail");
+var MagicCardDetail = require("MagicCardDetail");
 
 cc.Class({
     extends: cc.Component,
@@ -33,13 +34,63 @@ cc.Class({
     // onLoad () {},
 
     start () {
-        this.initPlayer1();
-        this.initPlayer2();
-        this.initPlayer1RoleCards();
+        // this.initPlayer1();
+        // this.initPlayer2();
+        // this.initKengs();
+        // this.initPlayer1RoleCards();
         // this.initPlayer1MagicCards();
+        this.gameStart();
     },
 
     // update (dt) {},
+
+    gameStart(){
+        var self = this;
+
+        var p1 = this.initPlayer1();
+        var p2 = this.initPlayer2();
+        
+        var winw = cc.winSize.width;
+        var winh = cc.winSize.height;
+        var p11w = -winw / 2;
+        var p12w = -p1.node.width;
+        var p13h = -winh / 4;
+        var p14h = -winh / 2 + p1.node.height / 2;
+        cc.tween(p1.node).to(0,{position:cc.v2(p11w,0)})
+        .to(0.25,{position:cc.v2(p12w,0)})
+        .to(0.25,{position:cc.v2(p11w,p13h)})
+        .to(0.25,{position:cc.v2(p12w,p14h)})
+        .to(0.25,{position:cc.v2(p11w,p13h)})
+        .call(()=>{
+            p1.setOriginPositon();
+
+            //初始化坑和角色牌
+            self.initKengs();
+            self.initPlayer1RoleCards();
+        })
+        .start();
+
+        var p21w = winw / 2;
+        var p22w = p2.node.width;
+        var p23h = winh / 4;
+        var p24h = winh / 2 - p2.node.height / 2;
+        cc.tween(p2.node).to(0,{position:cc.v2(p21w,0)})
+        .to(0.25,{position:cc.v2(p22w,0)})
+        .to(0.25,{position:cc.v2(p21w,p23h)})
+        .to(0.25,{position:cc.v2(p22w,p24h)})
+        .to(0.25,{position:cc.v2(p21w,p23h)})
+        .call(()=>{
+            p2.setOriginPositon();
+        })
+        .start();
+
+    },
+
+    //初始化坑
+    initKengs(){
+        var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+        km.initKengs();
+    },
 
     //初始化我方角色
     initPlayer1(){
@@ -48,6 +99,7 @@ cc.Class({
             p1.roleImage.spriteFrame = images;
             p1.hp.string = "200";
         });
+        return p1;
     },
 
     //初始化敌方角色
@@ -55,8 +107,9 @@ cc.Class({
         var p2 = cc.find("Canvas/Player2").getComponent("PlayerDetail");
         cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
             p2.roleImage.spriteFrame = images;
-            p2.hp.string = "200";
+            p2.hp.string = "10";
         });
+        return p2;
     },
 
     //初始化我方角色卡
@@ -74,7 +127,6 @@ cc.Class({
     //初始化敌方角色卡
     initPlayer2RoleCards(){
         this.scheduleOnce(()=>{
-            cc.log("1");
             var self = this;
             var roleCard = new RoleCardDetail();
             roleCard.roleAttack = cc.Label;
@@ -90,7 +142,6 @@ cc.Class({
 
         },0.5);
         this.scheduleOnce(()=>{
-            cc.log("2");
             var self = this;
             var roleCard = new RoleCardDetail();
             roleCard.roleAttack = cc.Label;
@@ -106,7 +157,6 @@ cc.Class({
 
         },1.25);
         this.scheduleOnce(()=>{
-            cc.log("3");
             var self = this;
             var roleCard = new RoleCardDetail();
             roleCard.roleAttack = cc.Label;
@@ -125,7 +175,37 @@ cc.Class({
 
     //初始化敌方魔法卡
     initPlayer2MagicCards(){
+        cc.log("进入敌方魔法卡选择");
+        this.scheduleOnce(()=>{
+            var self = this;
+            var magicCardDetail = new MagicCardDetail();
+            magicCardDetail.magicAttack = cc.Label;
+            magicCardDetail.magicImage = cc.Sprite;
+            cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
+                magicCardDetail.magicImage.spriteFrame = images;
+                magicCardDetail.magicAttack.string = "33";
 
+                var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+                km.setKengCanClick(magicCardDetail);
+            });
+
+        },0.75);
+
+        this.scheduleOnce(()=>{
+
+            var self = this;
+            var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+            var keng = km.kengs[0].getComponent("KengDetail");
+            km.setKengCannotClick();
+            km.countAttack(keng);
+
+        },1);
+
+        //进入结算阶段
+        this.scheduleOnce(()=>{
+            //调用结算
+            this.enter2DuelState();
+        },1.5);
     },
 
     //进入了敌方选卡流程
@@ -150,6 +230,118 @@ cc.Class({
 
             this.initPlayer1MagicCards();
         }
-    }
+    },
 
+    //进入结算阶段
+    enter2DuelState(){
+
+        var self = this;
+
+        //开启碰撞检测？
+        var manager = cc.director.getCollisionManager();
+        manager.enabled = true;
+        
+        var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+        var kd0 = parseInt(km.kengs[0].getComponent("KengDetail").roleAttack.string);
+        var kd1 = parseInt(km.kengs[1].getComponent("KengDetail").roleAttack.string);
+        var kd2 = parseInt(km.kengs[2].getComponent("KengDetail").roleAttack.string);
+        var kd3 = parseInt(km.kengs[3].getComponent("KengDetail").roleAttack.string);
+        var kd4 = parseInt(km.kengs[4].getComponent("KengDetail").roleAttack.string);
+        var kd5 = parseInt(km.kengs[5].getComponent("KengDetail").roleAttack.string);
+        var duration1 = kd0 == kd3 ? 1.5 : 2.5;
+        var duration2 = kd1 == kd4 ? 1.5 : 2.5;
+        var duration3 = kd2 == kd5 ? 1.5 : 2.5;
+
+        //挪动角色卡
+        var player1 = cc.find("Canvas/Player1");
+        cc.tween(player1).to(0.5,{position:cc.v2(-100,-450+125)}).start();
+        var player2 = cc.find("Canvas/Player2");
+        var animate = cc.tween(player2).to(0.5,{position:cc.v2(100,450-125)}).call(()=>{
+            //第一阶段动画
+            this.startDuelStateOne();
+        }).delay(duration1).call(()=>{
+            if (self.shouldEndRound()){
+                animate.stop();
+                return;
+            }
+            //第二阶段动画
+            this.startDuelStateTwo();
+        }).delay(duration2).call(()=>{
+            if (self.shouldEndRound()){
+                animate.stop();
+                return;
+            }
+            //第三阶段动画
+            this.startDuelStateThree();
+        }).delay(duration3).call(()=>{
+            //判断是否进入新一轮
+            cc.log("是否进入新一轮");
+            if (self.shouldEndRound()){
+                animate.stop();
+                return;
+            }
+
+            //这里是要进入新的一轮
+            //移回原位置后
+            var p1 = cc.find("Canvas/Player1").getComponent("PlayerDetail");
+            var p2 = cc.find("Canvas/Player2").getComponent("PlayerDetail");
+            cc.tween(p1.node).to(0.5,{position:p1.getOriginPositon()}).start();
+            cc.tween(p2.node).to(0.5,{position:p2.getOriginPositon()}).call(()=>{
+                //重置坑和角色卡
+                var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+                km.resetKengs();
+
+                self.initPlayer1RoleCards();
+
+            }).start();
+
+        }).start();
+    },
+
+    startDuelStateOne(){
+        var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+        var km0 = km.kengs[0];
+        var action0 = cc.moveBy(0.5, 0, -100);
+        km0.runAction(action0);
+
+        var km3 = km.kengs[3];
+        var action3 = cc.moveBy(0.5, 0, 100);
+        km3.runAction(action3);
+    },
+
+    startDuelStateTwo(){
+        var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+        var km1 = km.kengs[1];
+        var action1 = cc.moveBy(0.5, 0, -100);
+        km1.runAction(action1);
+
+        var km4 = km.kengs[4];
+        var action4 = cc.moveBy(0.5, 0, 100);
+        km4.runAction(action4);
+    },
+
+    startDuelStateThree(){
+        var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+        var km2 = km.kengs[2];
+        var action2 = cc.moveBy(0.5, 0, -100);
+        km2.runAction(action2);
+
+        var km5 = km.kengs[5];
+        var action5 = cc.moveBy(1, 0, 100);
+        km5.runAction(action5);
+    },
+
+    shouldEndRound(){
+        var p1 = cc.find("Canvas/Player1").getComponent("PlayerDetail");
+        var p2 = cc.find("Canvas/Player2").getComponent("PlayerDetail");
+        if (parseInt(p1.hp.string) == 0){
+            //进入输的界面
+            return true;
+        }
+        if (parseInt(p2.hp.string) == 0){
+            //进入赢的界面
+            return true;
+        }
+        return false;
+    },
 });

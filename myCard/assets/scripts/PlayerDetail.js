@@ -9,6 +9,12 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+
+        _oposition : {
+            default : null,
+            type : cc.v3
+        },
+
         roleImage : {
             default: null,
             type: cc.Sprite
@@ -24,8 +30,17 @@ cc.Class({
     // onLoad () {},
 
     start () {
-
+        this._oposition = this.node.position;
     },
 
     // update (dt) {},
+
+    setOriginPositon(){
+        this._oposition = this.node.position;
+    },
+
+    getOriginPositon(){
+        return this._oposition;
+    },
+
 });

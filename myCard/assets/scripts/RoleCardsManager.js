@@ -50,7 +50,7 @@ cc.Class({
                 var rcd = roleCard1.getComponent("RoleCardDetail");
                 //创建sprite和attack
                 cc.loader.loadRes('images/player1', cc.SpriteFrame, function (err, spriteFrame) {
-                    rcd.initCard(spriteFrame,"11");
+                    rcd.initCard(spriteFrame,"55");
                 });
             });
         }
