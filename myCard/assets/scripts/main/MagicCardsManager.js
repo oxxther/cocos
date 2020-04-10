@@ -8,6 +8,8 @@
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
+import { MagicCardState } from "./MagicCardDetail";
+
 cc.Class({
     extends: cc.Component,
 
@@ -42,19 +44,34 @@ cc.Class({
     //初始化卡牌
     initCards(){
         cc.log("初始化魔法卡");
+
+        //随机取出4个下标
+        var set = new Set();
+        while(set.size < 4){
+            set.add(Math.floor(Math.random()*5));
+        }
+
         var node = this.node;
-        for (let index = 0; index < 4; index++) {
+        var playerNode = cc.find("GameData").getComponent("zdfGameData");
+        var i = 0;
+        set.forEach((index) => {
+            var MagicCardDData = playerNode.magicCardData[index];
             cc.loader.loadRes('prefabs/magicCard1', function (err, prefab) {
                 var magicCard1 = cc.instantiate(prefab);
                 magicCard1.parent = node;
-                magicCard1.x = -450 + index * 300;
+                magicCard1.x = -450 + i * 300;
+                i ++;
                 var mcd = magicCard1.getComponent("MagicCardDetail");
                 //创建sprite和attack
-                cc.loader.loadRes('images/player2', cc.SpriteFrame, function (err, spriteFrame) {
-                    mcd.initCard(spriteFrame,"22");
+                cc.loader.loadRes(MagicCardDData.magicImg, cc.SpriteFrame, function (err, spriteFrame) {
+                    var path = MagicCardDData.magicImg.replace("sm/sm","magicd/magic");
+                    cc.loader.loadRes(path, cc.SpriteFrame,function(err, sf){
+                        mcd.initCard(spriteFrame,sf,MagicCardDData.magicAttack.toString());
+                    });
                 });
+                
             });
-        }
+        });
     },
 
     resetCards2Normal(){

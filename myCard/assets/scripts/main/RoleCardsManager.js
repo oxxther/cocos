@@ -8,6 +8,8 @@
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
+import { RoleCardState } from "./RoleCardDetail";
+
 cc.Class({
     extends: cc.Component,
 
@@ -41,19 +43,35 @@ cc.Class({
 
     //初始化卡牌
     initCards(){
+
+        //随机取出4个下标
+        var set = new Set();
+        while(set.size < 4){
+            set.add(Math.floor(Math.random()*5));
+        }
+
         var node = this.node;
-        for (let index = 0; index < 4; index++) {
+        var playerNode = cc.find("GameData").getComponent("zdfGameData");
+        var i = 0;
+        set.forEach((index) => {
+            var RoleCardDData = playerNode.roleCardData[index];
             cc.loader.loadRes('prefabs/roleCard1', function (err, prefab) {
                 var roleCard1 = cc.instantiate(prefab);
                 roleCard1.parent = node;
-                roleCard1.x = -450 + index * 300;
+                roleCard1.x = -450 + i * 300;
+                i ++;
                 var rcd = roleCard1.getComponent("RoleCardDetail");
                 //创建sprite和attack
-                cc.loader.loadRes('images/player1', cc.SpriteFrame, function (err, spriteFrame) {
-                    rcd.initCard(spriteFrame,"55");
+                cc.loader.loadRes(RoleCardDData.roleImg, cc.SpriteFrame, function (err, spriteFrame) {
+                    var path = RoleCardDData.roleImg.replace("sr/sr","roled/role");
+                    cc.loader.loadRes(path, cc.SpriteFrame,function(err, sf){
+                        rcd.initCard(spriteFrame,sf,RoleCardDData.roleAttack.toString());
+                    });
                 });
+                
             });
-        }
+        });
+
     },
 
     resetCards2Normal(){

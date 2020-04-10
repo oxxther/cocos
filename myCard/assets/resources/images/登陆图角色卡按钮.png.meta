@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.4",
+  "uuid": "f229e2f4-103c-4a01-9c1d-482eb878eb64",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 485,
+  "height": 161,
+  "platformSettings": {},
+  "subMetas": {
+    "登陆图角色卡按钮": {
+      "ver": "1.0.4",
+      "uuid": "356194df-e843-4db7-adee-389515a5fea4",
+      "rawTextureUuid": "f229e2f4-103c-4a01-9c1d-482eb878eb64",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 485,
+      "height": 161,
+      "rawWidth": 485,
+      "rawHeight": 161,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

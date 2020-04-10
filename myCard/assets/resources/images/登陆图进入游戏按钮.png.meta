@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.4",
+  "uuid": "c6e7f00e-c5e2-4c8c-9c38-842daa4f59bb",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 616,
+  "height": 184,
+  "platformSettings": {},
+  "subMetas": {
+    "登陆图进入游戏按钮": {
+      "ver": "1.0.4",
+      "uuid": "b7612c79-1e94-422a-9079-64b6bf365d5e",
+      "rawTextureUuid": "c6e7f00e-c5e2-4c8c-9c38-842daa4f59bb",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 616,
+      "height": 184,
+      "rawWidth": 616,
+      "rawHeight": 184,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

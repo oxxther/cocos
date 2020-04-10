@@ -5,8 +5,8 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-var RoleCardDetail = require("RoleCardDetail");
-var MagicCardDetail = require("MagicCardDetail");
+import { RoleCardDetail } from "./RoleCardDetail";
+import { MagicCardDetail } from "./MagicCardDetail";
 
 cc.Class({
     extends: cc.Component,
@@ -94,20 +94,20 @@ cc.Class({
 
     //初始化我方角色
     initPlayer1(){
+        var playerNode = cc.find("GameData").getComponent("PlayerDData");
         var p1 = cc.find("Canvas/Player1").getComponent("PlayerDetail");
-        cc.loader.loadRes("images/player1",cc.SpriteFrame,function(error,images){
-            p1.roleImage.spriteFrame = images;
-            p1.hp.string = "200";
-        });
+        p1.roleImage.spriteFrame = playerNode.playerHeaderImg;
+        p1.hp.string = playerNode.playerHp;
         return p1;
     },
 
     //初始化敌方角色
     initPlayer2(){
+        var playerNode = cc.find("GameData").getComponent("zdfGameData");
         var p2 = cc.find("Canvas/Player2").getComponent("PlayerDetail");
         cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
             p2.roleImage.spriteFrame = images;
-            p2.hp.string = "10";
+            p2.hp.string = playerNode.gameLevel * 50 + 50;
         });
         return p2;
     },
@@ -126,33 +126,55 @@ cc.Class({
 
     //初始化敌方角色卡
     initPlayer2RoleCards(){
+        var set = new Set();
+        while(set.size < 3){
+            set.add(Math.floor(Math.random()*7));
+        }
+        set = [...set];
+        var playerNode = cc.find("GameData").getComponent("zdfGameData");
+
         this.scheduleOnce(()=>{
             var self = this;
             var roleCard = new RoleCardDetail();
             roleCard.roleAttack = cc.Label;
             roleCard.roleImage = cc.Sprite;
-            cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
-                roleCard.roleImage.spriteFrame = images;
-                roleCard.roleAttack.string = "33";
+            roleCard.roleSImage = cc.Sprite;
+            
+            var RoleCardDData = playerNode.roleCardData[set[0]];
+            //创建sprite和attack
+            cc.loader.loadRes(RoleCardDData.roleImg, cc.SpriteFrame, function (err, spriteFrame) {
+                var path = RoleCardDData.roleImg.replace("sr/sr","roled/role");
+                cc.loader.loadRes(path, cc.SpriteFrame,function(err, sf){
+                    roleCard.roleImage.spriteFrame = spriteFrame;
+                    roleCard.roleSImage.spriteFrame = sf;
+                    roleCard.roleAttack.string = RoleCardDData.roleAttack.toString();
 
-                //把内容传递到keng里面
-                var node = cc.find("Canvas/Kengs");
-                node.getComponent("KengsManager").setKengDataPlayer2(roleCard);
+                    //把内容传递到keng里面
+                    var node = cc.find("Canvas/Kengs");
+                    node.getComponent("KengsManager").setKengDataPlayer2(roleCard);
+                });
             });
-
         },0.5);
         this.scheduleOnce(()=>{
             var self = this;
             var roleCard = new RoleCardDetail();
             roleCard.roleAttack = cc.Label;
             roleCard.roleImage = cc.Sprite;
-            cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
-                roleCard.roleImage.spriteFrame = images;
-                roleCard.roleAttack.string = "33";
+            roleCard.roleSImage = cc.Sprite;
+            
+            var RoleCardDData = playerNode.roleCardData[set[1]];
+            //创建sprite和attack
+            cc.loader.loadRes(RoleCardDData.roleImg, cc.SpriteFrame, function (err, spriteFrame) {
+                var path = RoleCardDData.roleImg.replace("sr/sr","roled/role");
+                cc.loader.loadRes(path, cc.SpriteFrame,function(err, sf){
+                    roleCard.roleImage.spriteFrame = spriteFrame;
+                    roleCard.roleSImage.spriteFrame = sf;
+                    roleCard.roleAttack.string = RoleCardDData.roleAttack.toString();
 
-                //把内容传递到keng里面
-                var node = cc.find("Canvas/Kengs");
-                node.getComponent("KengsManager").setKengDataPlayer2(roleCard);
+                    //把内容传递到keng里面
+                    var node = cc.find("Canvas/Kengs");
+                    node.getComponent("KengsManager").setKengDataPlayer2(roleCard);
+                });
             });
 
         },1.25);
@@ -161,13 +183,21 @@ cc.Class({
             var roleCard = new RoleCardDetail();
             roleCard.roleAttack = cc.Label;
             roleCard.roleImage = cc.Sprite;
-            cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
-                roleCard.roleImage.spriteFrame = images;
-                roleCard.roleAttack.string = "33";
+            roleCard.roleSImage = cc.Sprite;
+            
+            var RoleCardDData = playerNode.roleCardData[set[2]];
+            //创建sprite和attack
+            cc.loader.loadRes(RoleCardDData.roleImg, cc.SpriteFrame, function (err, spriteFrame) {
+                var path = RoleCardDData.roleImg.replace("sr/sr","roled/role");
+                cc.loader.loadRes(path, cc.SpriteFrame,function(err, sf){
+                    roleCard.roleImage.spriteFrame = spriteFrame;
+                    roleCard.roleSImage.spriteFrame = sf;
+                    roleCard.roleAttack.string = RoleCardDData.roleAttack.toString();
 
-                //把内容传递到keng里面
-                var node = cc.find("Canvas/Kengs");
-                node.getComponent("KengsManager").setKengDataPlayer2(roleCard);
+                    //把内容传递到keng里面
+                    var node = cc.find("Canvas/Kengs");
+                    node.getComponent("KengsManager").setKengDataPlayer2(roleCard);
+                });
             });
 
         },2);
@@ -175,18 +205,27 @@ cc.Class({
 
     //初始化敌方魔法卡
     initPlayer2MagicCards(){
+        var index = Math.floor(Math.random()*5);
+        var playerNode = cc.find("GameData").getComponent("zdfGameData");
         cc.log("进入敌方魔法卡选择");
         this.scheduleOnce(()=>{
             var self = this;
             var magicCardDetail = new MagicCardDetail();
             magicCardDetail.magicAttack = cc.Label;
             magicCardDetail.magicImage = cc.Sprite;
-            cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
-                magicCardDetail.magicImage.spriteFrame = images;
-                magicCardDetail.magicAttack.string = "33";
+            magicCardDetail.magicSImage = cc.Sprite;
 
-                var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
-                km.setKengCanClick(magicCardDetail);
+            MagicCardDData = playerNode.magicCardData[index];
+            cc.loader.loadRes(MagicCardDData.magicImg,cc.SpriteFrame,function(error,spriteFrame){
+                var path = MagicCardDData.magicImg.replace("sm/sm","magicd/magic");
+                cc.loader.loadRes(path, cc.SpriteFrame,function(err, sf){
+                    magicCardDetail.magicImage.spriteFrame = spriteFrame;
+                    magicCardDetail.magicSImage.spriteFrame = sf;
+                    magicCardDetail.magicAttack.string = MagicCardDData.magicAttack.toString();
+
+                    var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
+                    km.setKengCanClick(magicCardDetail);
+                });
             });
 
         },0.75);
@@ -195,7 +234,8 @@ cc.Class({
 
             var self = this;
             var km = cc.find("Canvas/Kengs").getComponent("KengsManager");
-            var keng = km.kengs[0].getComponent("KengDetail");
+            var index = Math.floor(Math.random()*3);
+            var keng = km.kengs[index].getComponent("KengDetail");
             km.setKengCannotClick();
             km.countAttack(keng);
 
@@ -253,10 +293,11 @@ cc.Class({
         var duration3 = kd2 == kd5 ? 1.5 : 2.5;
 
         //挪动角色卡
+        var winh = cc.winSize.height;
         var player1 = cc.find("Canvas/Player1");
-        cc.tween(player1).to(0.5,{position:cc.v2(-100,-450+125)}).start();
+        cc.tween(player1).to(0.5,{position:cc.v2(-100,-winh/2+125)}).start();
         var player2 = cc.find("Canvas/Player2");
-        var animate = cc.tween(player2).to(0.5,{position:cc.v2(100,450-125)}).call(()=>{
+        var animate = cc.tween(player2).to(0.5,{position:cc.v2(100,winh/2-125)}).call(()=>{
             //第一阶段动画
             this.startDuelStateOne();
         }).delay(duration1).call(()=>{

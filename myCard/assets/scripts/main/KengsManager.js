@@ -5,7 +5,7 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-var MagicCardDetail = require("MagicCardDetail");
+import { MagicCardDetail } from "./MagicCardsManager";
 
 cc.Class({
     extends: cc.Component,
@@ -71,7 +71,7 @@ cc.Class({
     setKengDataPlayer1(roleCardDetail){
         var node = this.kengs[this.player1Index];
         if (node){
-            node.getComponent("KengDetail").setupKeng(roleCardDetail.roleImage.spriteFrame,roleCardDetail.roleAttack.string);
+            node.getComponent("KengDetail").setupKeng(roleCardDetail.roleSImage.spriteFrame,roleCardDetail.roleAttack.string);
             //下标+1
             this.player1Index++;
             return true;
@@ -86,7 +86,7 @@ cc.Class({
 
         var node = this.kengs[this.player2Index];
         if (node){
-            node.getComponent("KengDetail").setupKeng(roleCardDetail.roleImage.spriteFrame,roleCardDetail.roleAttack.string);
+            node.getComponent("KengDetail").setupKeng(roleCardDetail.roleSImage.spriteFrame,roleCardDetail.roleAttack.string);
             //下标+1
             this.player2Index++;
             return true;
@@ -116,18 +116,17 @@ cc.Class({
     countAttack(kengDetail){
         kengDetail.animateSkillImage.active = true;
         var cmcd = this._currentMagicCardDetail;
-        cc.loader.loadRes("images/player2",cc.SpriteFrame,function(error,images){
+        
+        var sprite = kengDetail.animateSkillImage.getComponent(cc.Sprite);
+        sprite.spriteFrame = cmcd.magicSImage.spriteFrame;
+        var attack = parseInt(kengDetail.roleAttack.string);
+        attack += parseInt(cmcd.magicAttack.string);
+        kengDetail.roleAttack.string = attack + "";
 
-            var sprite = kengDetail.animateSkillImage.getComponent(cc.Sprite);
-            sprite.spriteFrame = images;
-            var attack = parseInt(kengDetail.roleAttack.string);
-            attack += parseInt(cmcd.magicAttack.string);
-            kengDetail.roleAttack.string = attack + "";
-
-            cc.tween(kengDetail.animateSkillImage).to(0,{scale:1.5}).to(0.5,{scale:1}).call(() => {
-                kengDetail.animateSkillImage.active = false;
-            }).start();
-        });
+        cc.tween(kengDetail.animateSkillImage).to(0,{scale:1.5}).to(0.5,{scale:1}).call(() => {
+            kengDetail.animateSkillImage.active = false;
+        }).start();
+        
     },
 
 });

@@ -5,16 +5,20 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-RoleCardState = cc.Enum({
+export var RoleCardState = cc.Enum({
     Normal : 0,
     Selected : 1,
     Sure : 2
 });
 
-cc.Class({
+export var RoleCardDetail = cc.Class({
     extends: cc.Component,
 
     properties: {
+        roleSImage:{
+            default: null, 
+            type: cc.Sprite
+        },
         roleImage: {
             default: null, 
             type: cc.Sprite
@@ -40,8 +44,9 @@ cc.Class({
     // update (dt) {},
 
     //初始化卡片内容
-    initCard(sprite,attack){
+    initCard(sprite,sprite1,attack){
         this.roleImage.spriteFrame = sprite;
+        this.roleSImage.spriteFrame = sprite1;
         this.roleAttack.string = attack;
     },
 

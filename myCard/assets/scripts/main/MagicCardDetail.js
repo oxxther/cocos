@@ -5,15 +5,19 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-MagicCardState = cc.Enum({
+export var MagicCardState = cc.Enum({
     Normal : 0,
     Selected : 1
 });
 
-cc.Class({
+export var MagicCardDetail = cc.Class({
     extends: cc.Component,
-
+    
     properties: {
+        magicSImage:{
+            default: null, 
+            type: cc.Sprite
+        },
         magicImage: {
             default: null, 
             type: cc.Sprite
@@ -39,8 +43,9 @@ cc.Class({
     // update (dt) {},
 
     //初始化卡片内容
-    initCard(sprite,attack){
+    initCard(sprite,sprite1,attack){
         this.magicImage.spriteFrame = sprite;
+        this.magicSImage.spriteFrame = sprite1;
         this.magicAttack.string = attack;
     },
 
